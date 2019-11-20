@@ -51,6 +51,11 @@ typedef enum {
 } PinDirection;
 
 typedef enum {
+
+    // Not connected
+    NC = (int)0xFFFFFFFF,
+
+
     p0  = 0,
     p1  = 1,
     p2  = 2,
@@ -120,75 +125,48 @@ typedef enum {
     P0_30 = p30,
     P0_31 = p31,
 
-    LED1    = p17,
-    LED2    = p18,
-    LED3    = p19,
-    LED4    = p20,
+    LED1    = p27,
 
     BUTTON1 = p13,
-    BUTTON2 = p14,
-    BUTTON3 = p15,
-    BUTTON4 = p16,
-
-    RX_PIN_NUMBER  = p8,
-    TX_PIN_NUMBER  = p6,
-    CTS_PIN_NUMBER = p7,
-    RTS_PIN_NUMBER = p5,
 
     // mBed interface Pins
-    USBTX = TX_PIN_NUMBER,
-    USBRX = RX_PIN_NUMBER,
-    STDIO_UART_TX = TX_PIN_NUMBER,
-    STDIO_UART_RX = RX_PIN_NUMBER,
-    STDIO_UART_CTS = CTS_PIN_NUMBER,
-    STDIO_UART_RTS = RTS_PIN_NUMBER,
+    USBTX = NC,
+    USBRX = NC,
+    STDIO_UART_TX = NC,
+    STDIO_UART_RX = NC,
+    STDIO_UART_CTS = NC,
+    STDIO_UART_RTS = NC,
 
-    SPI_PSELMOSI0 = p23,
-    SPI_PSELMISO0 = p24,
-    SPI_PSELSS0   = p22,
-    SPI_PSELSCK0  = p25,
+    SPI_MOSI = p3,
+    SPI_MISO = p4,
+    SPI_SCK  = p2,
 
-    SPI_PSELMOSI1 = p12,
-    SPI_PSELMISO1 = p13,
-    SPI_PSELSS1   = p11,
-    SPI_PSELSCK1  = p14,
+    SPI_CS_FLASH = p5,
+    SPI_CS_LCD = p25,
 
-    SPIS_PSELMOSI = p12,
-    SPIS_PSELMISO = p13,
-    SPIS_PSELSS   = p11,
-    SPIS_PSELSCK  = p14,
+    I2C_SDA = p6,
+    I2C_SCL = p7,
 
-    I2C_SDA0 = p26,
-    I2C_SCL0 = p27,
+    PIN_BMA421_INTERRUPT = p8,
+    PIN_LCD_DET_OUT = p9,
+    PIN_TOUCHPAD_RESET_OUT = p10,
+    PIN_CHARGE_INDICATION_IN = p12,
+    PIN_PUSH_BUTTON_IN = p13,
+    PIN_VIBRATOR_OUT = p16,
+    PIN_LCD_RS_OUT = p18,
+    PIN_CHARGER_POWER_PRESENT_IN = p19,
+    PIN_TOUCHPAD_INTERRUPT = p28,
 
-    D0 = p11,
-    D1 = p12,
-    D2 = p13,
-    D3 = p14,
-    D4 = p15,
-    D5 = p16,
-    D6 = p17,
-    D7 = p18,
 
-    D8 = p19,
-    D9 = p20,
-    D10 = p22,
-    D11 = p23,
-    D12 = p24,
-    D13 = p25,
 
-    D14 = p26,
-    D15 = p27,
+    LCD_BACKLIGHT_LOW = p14,
+    LCD_BACKLIGHT_MID = p22,
+    LCD_BACKLIGHT_HIGH = p23,
 
-    A0 = p3,
-    A1 = p4,
-    A2 = p28,
-    A3 = p29,
-    A4 = p30,
-    A5 = p31,
 
-    // Not connected
-    NC = (int)0xFFFFFFFF
+    BATTERY_VOLTAGE = p31
+
+
 } PinName;
 
 typedef enum {

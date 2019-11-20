@@ -7,6 +7,9 @@
       "5"
     ],
     "device_name": "nRF52832_xxAA",
+    "components_add": [
+      "SPIF"
+    ],
     "macros_add": [
       "CONFIG_GPIO_AS_PINRESET",
       "NRF52_PAN_12",
@@ -23,6 +26,9 @@
       "NRF52_PAN_62",
       "NRF52_PAN_63",
       "NRF52_PAN_64"
+    ],
+    "device_has_add": [
+      "STDIO_MESSAGES"
     ],
     "device_has_remove": [
       "ITM"
