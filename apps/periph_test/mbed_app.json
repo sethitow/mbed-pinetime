@@ -1,0 +1,16 @@
+{
+  "macros": [],
+  "target_overrides": {
+    "*": {
+      "mbed-trace.enable": 1
+    },
+    "TARGET_PINETIME_DEV_KIT": {
+      "spif-driver.SPI_MOSI": "SPI_MOSI",
+      "spif-driver.SPI_MISO": "SPI_MISO",
+      "spif-driver.SPI_CLK": "SPI_SCK",
+      "spif-driver.SPI_CS": "SPI_CS_FLASH",
+      "spif-driver.SPI_FREQ": "8000000",
+      "spif-driver.debug": 1
+    }
+  }
+}
