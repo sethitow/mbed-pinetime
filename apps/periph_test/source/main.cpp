@@ -7,12 +7,13 @@
 #include "rtos/Mutex.h"
 #include "rtos/ThisThread.h"
 
+#include "HRS3300_HeartRateSensor.h"
 #include "bma421_hack.h"
 
 #include <bitset>
 
 #include "mbed-trace/mbed_trace.h"
-#define TRACE_GROUP "main"
+#define TRACE_GROUP "MAIN"
 
 namespace mbed
 {
@@ -66,6 +67,10 @@ int main()
     tr_info("BD Size %lld.", bd->size());
 
     i2c.frequency(100000);
+
+    HRS3300_HeartRateSensor hrs(&i2c);
+    hrs.set_enable(HRS3300_HeartRateSensor::HRS_ENABLE,
+                   HRS3300_HeartRateSensor::HRS_WAIT_TIME_400ms);
 
     struct bma4_dev bma;
     struct bma4_accel_config conf;
@@ -126,13 +131,17 @@ int main()
     {
         float battery_voltage_v = (battery_voltage.read() * 3.3) * 2;
         rslt = bma4_read_accel_xyz(&data, &bma);
+
         if (rslt)
         {
             print_rslt(rslt);
         }
 
-        tr_info("Main Button: %d. Batt Volt: %f. Accel Data: %i, %i, %i.", main_button.read(),
-                battery_voltage_v, data.x, data.y, data.z);
+        uint32_t hrs_val = hrs.read_heart_rate_sensor();
+        uint32_t als_val = hrs.read_ambient_light_sensor();
+
+        tr_info("Main Button: %d. Batt Volt: %f. Accel Data: %i, %i, %i. HRS: %lu. ALS: %lu.",
+                main_button.read(), battery_voltage_v, data.x, data.y, data.z, hrs_val, als_val);
 
         rtos::ThisThread::sleep_for(500);
     }
@@ -142,7 +151,7 @@ void set_backlight(uint8_t light_level)
 {
     std::bitset<3> bits(light_level);
 
-    backlight_high = bits[2];  
+    backlight_high = bits[2];
     backlight_mid = bits[1];
     backlight_low = bits[0];
 }
