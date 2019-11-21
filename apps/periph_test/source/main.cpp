@@ -28,6 +28,7 @@ void delay_ms(uint32_t period);
 uint16_t i2c_reg_write(uint8_t i2c_addr, uint8_t reg_addr, uint8_t *reg_data, uint16_t length);
 uint16_t i2c_reg_read(uint8_t i2c_addr, uint8_t reg_addr, uint8_t *reg_data, uint16_t length);
 void print_rslt(uint16_t rslt);
+void set_backlight(uint8_t light_level);
 
 mbed::DigitalIn main_button(p15, PullNone);
 mbed::DigitalOut vibrator(PIN_VIBRATOR_OUT);
@@ -58,9 +59,7 @@ int main()
     vibrator = true; // Turns the vibrator off
 
     // Turn the backlight off
-    backlight_high = true;
-    backlight_mid = true;
-    backlight_low = true;
+    set_backlight(7);
 
     mbed::BlockDevice *bd = mbed::BlockDevice::get_default_instance();
     tr_info("BD init returned %i", bd->init());
