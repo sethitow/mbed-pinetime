@@ -85,7 +85,7 @@
 /*! \file bma421.c
     \brief Sensor Driver for BMA421 sensor */
 
-#include "bma421_hack.h"
+#include "bma421.h"
 
 /**\name Feature configuration file */
 const uint8_t bma421_config_file[] = {

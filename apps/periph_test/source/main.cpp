@@ -8,7 +8,7 @@
 #include "rtos/ThisThread.h"
 
 #include "HRS3300_HeartRateSensor.h"
-#include "bma421_hack.h"
+#include "bma421.h"
 
 #include <bitset>
 
