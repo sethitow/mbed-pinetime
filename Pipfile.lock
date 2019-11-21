@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "558a2b0f67556102bbcb9385be4b3812f4a980e02acebd9d72067fedab3dbabb"
+            "sha256": "120dcb751280ab7c634d4066aa840ae15c9e06c8c5baba71f00fad7c3c62327a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -200,6 +200,7 @@
                 "sha256:edfb16b16a298717cf05b8c8a9ad1828b6ff3de5e93048ceccd74e6ae4ff0922"
             ],
             "index": "pypi",
+            "markers": "platform_system != 'Linux'",
             "version": "==0.7.99.post21"
         },
         "icetea": {
@@ -513,6 +514,7 @@
                 "sha256:9bd07746ce7f2198021a9fa187fa80df7b221ec5e4c234ab6f00ea355a3baf99"
             ],
             "index": "pypi",
+            "markers": "platform_system == 'Windows'",
             "version": "==224"
         },
         "pyyaml": {
@@ -611,6 +613,7 @@
                 "sha256:192ccfad3d7bb3ef43116d753f4d5cf85c0a6b738f832cc131e928fd93cdd400"
             ],
             "index": "pypi",
+            "markers": "platform_system == 'Windows'",
             "version": "==1.4.9"
         },
         "yattag": {
