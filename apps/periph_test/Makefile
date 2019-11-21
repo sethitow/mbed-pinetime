@@ -1,6 +1,8 @@
 APP_NAME = periph_test
 MBED_TARGET = TARGET_PINETIME_DEV_KIT
 
+PROFILE := $(MBED_PINETIME_PATH)/modules/mbed-os/tools/profiles/release.json
+
 MBED_SOURCES += --source $(MBED_PINETIME_PATH)/modules/mbed-os/ \
 	--source $(MBED_PINETIME_PATH)/targets/TARGET_NORDIC/TARGET_NRF5x/TARGET_NRF52/TARGET_MCU_NRF52832/TARGET_PINETIME_DEV_KIT/ \
 	--source source/ \
