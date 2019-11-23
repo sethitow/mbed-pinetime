@@ -1,7 +1,4 @@
-<video width="320" height="240" controls>
-  <source src="https://i.imgur.com/nKm4Co6.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+![Animated GIF of Pinetime demo](media/pixel-painting.gif)
 
 # Getting Started
 
