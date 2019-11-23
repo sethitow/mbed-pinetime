@@ -83,7 +83,7 @@ int main()
     // tr_info("BD init returned %i", bd->init());
     // tr_info("BD Size %lld.", bd->size());
 
-    i2c.frequency(100000);
+    i2c.frequency(400000);
 
     hrs.set_enable(HRS3300_HeartRateSensor::HRS_DISABLE,
                    HRS3300_HeartRateSensor::HRS_WAIT_TIME_400ms);
@@ -171,8 +171,29 @@ void set_backlight(uint8_t light_level)
 
 void on_touch_event(struct CST0xx_TouchPad::ts_event event)
 {
-    tr_info("MAIN! X: %u Y: %u", event.au16_x[0], event.au16_y[0]);
-    display.fillRect(event.au16_x[0], event.au16_y[0], 10, 10, 0xF800);
+    switch (event.type)
+    {
+    case CST0xx_TouchPad::EVENT_TYPE_TOUCH:
+        tr_info("TOUCH X: %u Y: %u", event.x, event.y);
+        break;
+    case CST0xx_TouchPad::EVENT_TYPE_LONG_TOUCH:
+        tr_info("TOUCH LONG X: %u Y: %u", event.x, event.y);
+        break;
+    case CST0xx_TouchPad::EVENT_TYPE_SWIPE_Y_POSITIVE:
+        tr_info("SWIPE y+ X: %u Y: %u", event.x, event.y);
+        break;
+    case CST0xx_TouchPad::EVENT_TYPE_SWIPE_X_POSITIVE:
+        tr_info("SWIPE x+ X: %u Y: %u", event.x, event.y);
+        break;
+    case CST0xx_TouchPad::EVENT_TYPE_SWIPE_Y_NEGATIVE:
+        tr_info("SWIPE y- X: %u Y: %u", event.x, event.y);
+        break;
+    case CST0xx_TouchPad::EVENT_TYPE_SWIPE_X_NEGATIVE:
+        tr_info("SWIPE x- X: %u Y: %u", event.x, event.y);
+        break;
+    }
+
+    display.fillRect(event.x, event.y, 10, 10, 0xF800);
 }
 
 void main_button_on_rise() { tr_info("Main Button Rise"); }
