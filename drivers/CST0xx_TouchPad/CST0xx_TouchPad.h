@@ -5,24 +5,9 @@
 #include "drivers/I2C.h"
 #include "platform/Callback.h"
 
-#define HYN_MAX_POINTS                          10
-
 class CST0xx_TouchPad
 {
   public:
-    struct ts_event
-    {
-        uint16_t au16_x[HYN_MAX_POINTS];         /* x coordinate */
-        uint16_t au16_y[HYN_MAX_POINTS];         /* y coordinate */
-        uint8_t au8_touch_event[HYN_MAX_POINTS]; /* touch event: 0 -- down; 1-- up; 2 -- contact */
-        uint8_t au8_finger_id[HYN_MAX_POINTS];   /* touch ID */
-        uint16_t pressure[HYN_MAX_POINTS];
-        uint16_t area[HYN_MAX_POINTS];
-        uint8_t touch_point;
-        int touchs;
-        uint8_t touch_point_num;
-    };
-
     enum event_type
     {
         EVENT_TYPE_TOUCH = 0x05,
@@ -31,6 +16,13 @@ class CST0xx_TouchPad
         EVENT_TYPE_SWIPE_Y_NEGATIVE = 0x02,
         EVENT_TYPE_SWIPE_X_NEGATIVE = 0x03,
         EVENT_TYPE_SWIPE_X_POSITIVE = 0x04
+    };
+
+    struct ts_event
+    {
+        enum event_type type;
+        uint16_t x;
+        uint16_t y;
     };
 
     CST0xx_TouchPad(mbed::I2C *i2c);

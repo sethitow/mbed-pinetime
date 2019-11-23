@@ -7,28 +7,18 @@
 
 #define CST0XX_I2C_ADDRESS 0x15
 
-#define CFG_MAX_TOUCH_POINTS 5
-
-#define HYN_MAX_ID 0x0F
-#define HYN_TOUCH_STEP 6
-#define HYN_FACE_DETECT_POS 1
+#define HYN_TOUCH_EVENT_TYPE_POS 1
 #define HYN_TOUCH_X_H_POS 3
 #define HYN_TOUCH_X_L_POS 4
 #define HYN_TOUCH_Y_H_POS 5
 #define HYN_TOUCH_Y_L_POS 6
-#define HYN_TOUCH_EVENT_POS 3
-#define HYN_TOUCH_ID_POS 5
-#define FT_TOUCH_POINT_NUM 2
-#define HYN_TOUCH_XY_POS 7
-#define HYN_TOUCH_MISC 8
-#define POINT_READ_BUF (3 + HYN_TOUCH_STEP * HYN_MAX_POINTS)
 
 void print_hex(uint8_t *string, uint32_t len)
 {
     tr_info("Dumping hex buffer of size %lu", len);
     for (unsigned int i = 0; i < len; ++i)
     {
-        printf("0x%02x ", string[i]);
+        printf("0x%02x \r\n", string[i]);
     }
     printf("\n");
     tr_info("End dump.");
@@ -36,14 +26,7 @@ void print_hex(uint8_t *string, uint32_t len)
 
 CST0xx_TouchPad::CST0xx_TouchPad(mbed::I2C *i2c) : _i2c(i2c)
 {
-    // uint8_t charbuf = 0;
-    // i2c_reg_read(HRS3300_I2C_ADDRESS, HRS3300_REG_ID, &charbuf, 1);
-    // MBED_ASSERT(charbuf == HRS3300_DEVICE_ID);
-
-    // i2c_reg_read(HRS3300_I2C_ADDRESS, HRS3300_REG_RESOLUTION, &charbuf, 1);
-    // tr_info("res: 0x%hu", charbuf);
-    // i2c_reg_read(HRS3300_I2C_ADDRESS, HRS3300_REG_HGAIN, &charbuf, 1);
-    // tr_info("gain: 0x%hu", charbuf);
+    // TODO: Check Chip ID and firmware version on initalization.
 }
 
 CST0xx_TouchPad::CST0xx_TouchPad(mbed::I2C *i2c,
@@ -54,45 +37,20 @@ CST0xx_TouchPad::CST0xx_TouchPad(mbed::I2C *i2c,
 
 void CST0xx_TouchPad::handle_interrupt()
 {
-    tr_info("Touch event");
-    uint8_t buf[33];
-
-    uint16_t ret = i2c_reg_read(0x15, 0x00, buf, 33);
-
-    tr_info("I2C Read returned: %u", ret);
-
-    print_hex(buf, sizeof(buf));
-
-    struct ts_event data = {0};
-
-    uint8_t pointid = HYN_MAX_ID;
-
-    data.touch_point_num = buf[FT_TOUCH_POINT_NUM] & 0x0F;
-    data.touch_point = 0;
-
-    for (unsigned int i = 0; i < CFG_MAX_TOUCH_POINTS; i++)
+    uint8_t buf[7];
+    uint16_t ret = i2c_reg_read(0x15, 0x00, buf, 7);
+    if (ret)
     {
-        pointid = (buf[HYN_TOUCH_ID_POS + HYN_TOUCH_STEP * i]) >> 4;
-        if (pointid >= HYN_MAX_ID)
-            break;
-        else
-            data.touch_point++;
-        data.au16_x[i] = (uint16_t)(buf[HYN_TOUCH_X_H_POS + HYN_TOUCH_STEP * i] & 0x0F) << 8 |
-                         (uint16_t)buf[HYN_TOUCH_X_L_POS + HYN_TOUCH_STEP * i];
-        data.au16_y[i] = (uint16_t)(buf[HYN_TOUCH_Y_H_POS + HYN_TOUCH_STEP * i] & 0x0F) << 8 |
-                         (uint16_t)buf[HYN_TOUCH_Y_L_POS + HYN_TOUCH_STEP * i];
-        data.au8_touch_event[i] = buf[HYN_TOUCH_EVENT_POS + HYN_TOUCH_STEP * i] >> 6;
-        data.au8_finger_id[i] = (buf[HYN_TOUCH_ID_POS + HYN_TOUCH_STEP * i]) >> 4;
-
-        data.pressure[i] = (buf[HYN_TOUCH_XY_POS + HYN_TOUCH_STEP * i]); // cannot constant value
-        data.area[i] = (buf[HYN_TOUCH_MISC + HYN_TOUCH_STEP * i]) >> 4;
-        if ((data.au8_touch_event[i] == 0 || data.au8_touch_event[i] == 2) &&
-            (data.touch_point_num == 0))
-            break;
+        tr_err("Touch event: I2C Read returned: %u", ret);
     }
 
-    tr_info("Num Points %u", data.touch_point_num);
-    tr_info("X: %u Y: %u", data.au16_x[0], data.au16_y[0]);
+    struct ts_event data = {};
+    data.type = static_cast<enum event_type>(
+        buf[HYN_TOUCH_EVENT_TYPE_POS]); // TODO: Handle invalid event type.
+    data.x = (uint16_t)(buf[HYN_TOUCH_X_H_POS] & 0x0F) << 8 | (uint16_t)buf[HYN_TOUCH_X_L_POS];
+    data.y = (uint16_t)(buf[HYN_TOUCH_Y_H_POS] & 0x0F) << 8 | (uint16_t)buf[HYN_TOUCH_Y_L_POS];
+
+    tr_debug("Touch event: Type %u. X: %u Y: %u", data.type, data.x, data.y);
 
     if (_touch_event_callback)
     {
