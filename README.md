@@ -1,3 +1,5 @@
+<blockquote class="imgur-embed-pub" lang="en" data-id="a/sTyuAQg"><a href="//imgur.com/a/sTyuAQg"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+
 # Getting Started
 
 > These instructions are macOS centric right now, but the Mbed toolchain will work on Mac, Windows, and Linux. Improvments to these instructions are welcome. 
@@ -27,7 +29,7 @@ To use the Makefiles, you must set the environment variable `MBED_PINETIME_PATH`
 
 - [x] BMA421 Accelerometer
 - [-] HRS3300 Heart Rate Sensor
-- [-] Hynitron CST816S Touch Pad
+- [x] Hynitron CST816S Touch Pad
 - [-] Sitronix ST7789V LCD Driver
 - [x] Macronix SPI Flash
 - [x] Vibrator
@@ -38,6 +40,7 @@ To use the Makefiles, you must set the environment variable `MBED_PINETIME_PATH`
 ### I2C 
 00> 0x15 Touchpad
 - Only responds after a touch event.
+- At 100khz, Limit of read from register 0x00 after a touch event is 190-195ish bytes. This is probably due to the chip going back to sleep.
 	
 00> 0x18 ACK Accelerometer
 - BMA421 -- Not a public avalible chip, therefore no publicly availible drivers.
