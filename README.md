@@ -35,27 +35,30 @@ To use the Makefiles, you must set the environment variable `MBED_PINETIME_PATH`
 - [x] ADC Battery Voltage Sense
 - [ ] Physical button
 
-I2C 
-00> 0x13? Touchpad
-	- Only responds after a touch event.
+### I2C 
+00> 0x15 Touchpad
+- Only responds after a touch event.
+	
 00> 0x18 ACK Accelerometer
-	- BMA421 -- Not a public avalible chip, therefore no publicly availible drivers.
-	- Similar to BMA423
-	- Seems to require binary blob on startup (chip firmware?)
+- BMA421 -- Not a public avalible chip, therefore no publicly availible drivers.
+- Similar to BMA423
+- Seems to require binary blob on startup (chip firmware?)
+	
 00> 0x44 ACK HALS3300 Heart Rate Sensor
-	- Datasheet is OK
-	- Resolution was set to 16bits 0x08
-	- Gain was set to 1 0x02
+- Datasheet is OK
+- Resolution was set to 16bits 0x08
+- Gain was set to 1 0x02
 
-SPI
+### SPI
 Flash:
-	- SPI flash is now working with Mbed SPIF driver
-	- Needed to be "reset" by letting the battery die
-	- 4194304 bytes
+- SPI flash is now working with Mbed SPIF driver
+- Needed to be "reset" by letting the battery die
+- 4194304 bytes
+
 Display:
-	- Display needs mode 3 SPI?
-	- https://www.allaboutcircuits.com/technical-articles/spi-serial-peripheral-interface/
-	- Got it sort-of working with Mbed ports of the Adafruit GFX libraries. 
-	- Still work to be done here
+- Display needs mode 3 SPI?
+- https://www.allaboutcircuits.com/technical-articles/spi-serial-peripheral-interface/
+- Got it sort-of working with Mbed ports of the Adafruit GFX libraries. 
+- Still work to be done here
 
 I can't get the physical button to work for the life of me. Someone please help 😂
