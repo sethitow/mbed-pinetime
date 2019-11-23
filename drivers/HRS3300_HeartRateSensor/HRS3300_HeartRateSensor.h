@@ -77,7 +77,6 @@ class HRS3300_HeartRateSensor
     };
 
     HRS3300_HeartRateSensor(mbed::I2C *i2c);
-    ~HRS3300_HeartRateSensor();
 
     void set_enable(enum HRS_ENABLE_DISABLE enable = HRS_DISABLE,
                     enum HRS_WAIT_TIME wait_time = HRS_WAIT_TIME_12_5ms,
