@@ -46,6 +46,12 @@ CST0xx_TouchPad::CST0xx_TouchPad(mbed::I2C *i2c) : _i2c(i2c)
     // tr_info("gain: 0x%hu", charbuf);
 }
 
+CST0xx_TouchPad::CST0xx_TouchPad(mbed::I2C *i2c,
+                                 mbed::Callback<void(struct ts_event)> touch_event_callback)
+    : _i2c(i2c), _touch_event_callback(touch_event_callback)
+{
+}
+
 void CST0xx_TouchPad::handle_interrupt()
 {
     tr_info("Touch event");
@@ -87,6 +93,11 @@ void CST0xx_TouchPad::handle_interrupt()
 
     tr_info("Num Points %u", data.touch_point_num);
     tr_info("X: %u Y: %u", data.au16_x[0], data.au16_y[0]);
+
+    if (_touch_event_callback)
+    {
+        _touch_event_callback(data);
+    }
 }
 
 uint16_t CST0xx_TouchPad::i2c_reg_write(uint8_t i2c_addr, uint8_t reg_addr, uint8_t *reg_data,
