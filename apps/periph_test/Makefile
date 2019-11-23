@@ -10,6 +10,9 @@ MBED_SOURCES += --source $(MBED_PINETIME_PATH)/modules/mbed-os/ \
 	--source $(MBED_PINETIME_PATH)/drivers/mbed-rtt \
 	--source $(MBED_PINETIME_PATH)/drivers/BMA42x_Accelerometer \
 	--source $(MBED_PINETIME_PATH)/drivers/HRS3300_HeartRateSensor \
-	--source $(MBED_PINETIME_PATH)/drivers/CST0xx_TouchPad
+	--source $(MBED_PINETIME_PATH)/drivers/CST0xx_TouchPad \
+	--source $(MBED_PINETIME_PATH)/drivers/Adafruit_ST7789 \
+	--source $(MBED_PINETIME_PATH)/drivers/Adafruit_GFX
+
 
 include ../../Makefile
