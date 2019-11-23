@@ -1,4 +1,7 @@
-<blockquote class="imgur-embed-pub" lang="en" data-id="a/sTyuAQg"><a href="//imgur.com/a/sTyuAQg"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+<video width="320" height="240" controls>
+  <source src="https://i.imgur.com/nKm4Co6.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 # Getting Started
 
