@@ -50,8 +50,8 @@ void Adafruit_ST7789::writedata(uint8_t c)
 // Initialization for ST7789 screens
 void Adafruit_ST7789::init(void)
 {
-    lcdPort.format(8,2);
-    lcdPort.frequency(70000000);
+    lcdPort.format(8,3);
+    lcdPort.frequency(8000000);
     
     _rst = 0;
     wait_ms(50);
