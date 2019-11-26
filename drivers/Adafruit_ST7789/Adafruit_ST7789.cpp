@@ -136,6 +136,7 @@ void Adafruit_ST7789::drawPixel(int16_t x, int16_t y, uint16_t color)
 
     setAddrWindow(x, y, x+1, y+1);
     _rs = 1;
+    _cs = 0;
     lcdPort.write(color >> 8);
     lcdPort.write(color & 0xFF);
 }
