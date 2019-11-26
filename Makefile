@@ -22,7 +22,8 @@ build: FORCE
 	--profile $(PROFILE) \
 	$(MBED_SOURCES) \
 	--build $(MBED_PINETIME_PATH)/apps/$(APP_NAME)/build/$(PROFILE_NAME) \
-	--app-config mbed_app.json
+	--app-config mbed_app.json \
+	--artifact-name $(APP_NAME)
 
 bootstrap-python:
 	pipenv install -r modules/mbed-os/requirements.txt
