@@ -74,73 +74,35 @@ int main()
     mbed_trace_init();
 
     tr_info("Booting...");
-    // lcd_cs = true;    // Disable LCD SPI communications
-    spi_flash_cs = true;    // Disable SPI Flash communications
     vibrator = true;  // Turns the vibrator off
-    set_backlight(1); // Turn the backlight off
+    set_backlight(6); // Turn the backlight on
 
-    // mbed::BlockDevice *bd = mbed::BlockDevice::get_default_instance();
-    // tr_info("BD init returned %i", bd->init());
-    // tr_info("BD Size %lld.", bd->size());
+    mbed::BlockDevice *bd = mbed::BlockDevice::get_default_instance();
+    tr_info("BD init returned %i", bd->init());
+    tr_info("BD Size %lld.", bd->size());
 
     i2c.frequency(400000);
 
-    hrs.set_enable(HRS3300_HeartRateSensor::HRS_DISABLE,
+    hrs.set_enable(HRS3300_HeartRateSensor::HRS_ENABLE,
                    HRS3300_HeartRateSensor::HRS_WAIT_TIME_400ms);
     // BMA421_Accelerometer accel(&i2c);
-
-    // printf("I2C Scan...\r\n");
-    // for (int i = 0; i < 128; i++)
-    // {
-    //     i2c.start();
-    //     int ret = i2c.write(i << 1);
-    //     if (ret == 1)
-    //     {
-    //         printf("0x%x ACK \r\n", i); // Send command string
-    //     }
-    //     else
-    //     {
-    //     	printf("0x%x NO ACK, returned %i \r\n", i, ret); // Send command string
-    //     }
-    //     i2c.stop();
-    // }
-    // printf("I2C Scan End \r\n");
-
-    // event_queue.call_every(500, task_500ms);
-    event_queue_thread.start(callback(&event_queue, &events::EventQueue::dispatch_forever));
-    touchpad_interrupt.fall(event_queue.event(&touch_pad, &CST0xx_TouchPad::handle_interrupt));
-    main_button_interrupt.mode(PullNone);
-    main_button_interrupt.rise(event_queue.event(main_button_on_rise));
-    main_button_interrupt.fall(event_queue.event(main_button_on_fall));
-
 
     tr_info("display init");
     display.init();
     tr_info("fillScreen");
     display.fillScreen(0x07E0);
-    
-    // uint16_t color = 0xF800;
-    // int t;
-    // int w = display.width() / 2;
-    // int x = display.height() - 1;
-    // int y = 0;
-    // int z = display.width();
-    // for (t = 0; t <= 15; t++)
-    // {
-    //     tr_info("drawTriangle");
-    //     display.drawTriangle(w, y, y, x, z, x, color);
-    //     x -= 4;
-    //     y += 4;
-    //     z -= 4;
-    //     color += 100;
-    // }
 
-    // display.setCursor(50,50);
-    // display.setTextColor(0xF800, 0xFFFF);
-    // display.printf("Hi");
+    display.setTextSize(2);
+    display.setCursor(0, 0);
+    display.setTextColor(0xFFFF, 0x0000);
+    display.printf("SPIF Size: %lluB \r\n", bd->size());
 
-
-
+    event_queue.call_every(500, task_500ms);
+    event_queue_thread.start(callback(&event_queue, &events::EventQueue::dispatch_forever));
+    touchpad_interrupt.fall(event_queue.event(&touch_pad, &CST0xx_TouchPad::handle_interrupt));
+    main_button_interrupt.mode(PullNone);
+    main_button_interrupt.rise(event_queue.event(main_button_on_rise));
+    main_button_interrupt.fall(event_queue.event(main_button_on_fall));
 }
 
 void task_500ms()
@@ -153,8 +115,16 @@ void task_500ms()
     //     print_rslt(rslt);
     // }
 
+    display.setTextSize(2);
+    display.setCursor(0, 40);
+    display.setTextColor(0xFFFF, 0x0000);
+    display.printf("Batt: %f \r\n", battery_voltage_v);
+
     uint32_t hrs_val = hrs.read_heart_rate_sensor();
     uint32_t als_val = hrs.read_ambient_light_sensor();
+
+    display.printf("HRS: %li \r\n", hrs_val);
+    display.printf("ALS: %li \r\n", als_val);
 
     tr_info("Batt Volt: %f. Accel Data: %i, %i, %i. HRS: %lu. ALS: %lu.", battery_voltage_v, data.x,
             data.y, data.z, hrs_val, als_val);
@@ -169,31 +139,60 @@ void set_backlight(uint8_t light_level)
     backlight_low = bits[0];
 }
 
+void i2c_scan(mbed::I2C &i2c)
+{
+    printf("I2C Scan...\r\n");
+    for (int i = 0; i < 128; i++)
+    {
+        i2c.start();
+        int ret = i2c.write(i << 1);
+        if (ret == 1)
+        {
+            printf("0x%x ACK \r\n", i); // Send command string
+        }
+        else
+        {
+            printf("0x%x NO ACK, returned %i \r\n", i, ret); // Send command string
+        }
+        i2c.stop();
+    }
+    printf("I2C Scan End \r\n");
+}
+
 void on_touch_event(struct CST0xx_TouchPad::ts_event event)
 {
+    display.setTextSize(2);
+    display.setCursor(0, 200);
+    display.setTextColor(0xF800, 0xFFFF);
     switch (event.type)
     {
     case CST0xx_TouchPad::EVENT_TYPE_TOUCH:
+        display.printf("TOUCH X: %u Y: %u", event.x, event.y);
         tr_info("TOUCH X: %u Y: %u", event.x, event.y);
         break;
     case CST0xx_TouchPad::EVENT_TYPE_LONG_TOUCH:
+        display.printf("TOUCH LONG X: %u Y: %u", event.x, event.y);
         tr_info("TOUCH LONG X: %u Y: %u", event.x, event.y);
         break;
     case CST0xx_TouchPad::EVENT_TYPE_SWIPE_Y_POSITIVE:
+        display.printf("SWIPE y+ X: %u Y: %u", event.x, event.y);
         tr_info("SWIPE y+ X: %u Y: %u", event.x, event.y);
         break;
     case CST0xx_TouchPad::EVENT_TYPE_SWIPE_X_POSITIVE:
+        display.printf("SWIPE y+ X: %u Y: %u", event.x, event.y);
         tr_info("SWIPE x+ X: %u Y: %u", event.x, event.y);
         break;
     case CST0xx_TouchPad::EVENT_TYPE_SWIPE_Y_NEGATIVE:
+        display.printf("SWIPE y- X: %u Y: %u", event.x, event.y);
         tr_info("SWIPE y- X: %u Y: %u", event.x, event.y);
         break;
     case CST0xx_TouchPad::EVENT_TYPE_SWIPE_X_NEGATIVE:
+        display.printf("SWIPE x- X: %u Y: %u", event.x, event.y);
         tr_info("SWIPE x- X: %u Y: %u", event.x, event.y);
         break;
     }
 
-    display.fillRect(event.x, event.y, 10, 10, 0xF800);
+    display.fillRect(event.x - 5, event.y - 5, 10, 10, 0xF800);
 }
 
 void main_button_on_rise() { tr_info("Main Button Rise"); }
