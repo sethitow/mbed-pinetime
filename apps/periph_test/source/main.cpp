@@ -9,12 +9,11 @@
 #include "platform/Callback.h"
 #include "rtos/Mutex.h"
 #include "rtos/ThisThread.h"
-#include "rtos/Thread.h"
 
 #include "Adafruit_ST7789.h"
-#include "BMA421_Accelerometer.h"
 #include "CST0xx_TouchPad.h"
 #include "HRS3300_HeartRateSensor.h"
+#include "ptime_accel.h"
 
 #include "mbed-rtt.h"
 
@@ -35,12 +34,11 @@ FileHandle *mbed_override_console(int fd)
 void on_touch_event(struct CST0xx_TouchPad::ts_event event);
 uint16_t i2c_reg_read(uint8_t i2c_addr, uint8_t reg_addr, uint8_t *reg_data, uint16_t length);
 void set_backlight(uint8_t light_level);
-void task_500ms();
+void task_500ms(struct bma4_dev *dev);
 void touchpad_interrupt_handler();
 void main_button_on_rise();
 void main_button_on_fall();
 
-rtos::Thread event_queue_thread(osPriorityNormal, OS_STACK_SIZE, nullptr, "event_queue");
 events::EventQueue event_queue;
 
 mbed::DigitalOut vibrator(PIN_VIBRATOR_OUT);
@@ -52,7 +50,6 @@ mbed::DigitalIn charge_indication(PIN_CHARGE_INDICATION_IN);
 mbed::InterruptIn touchpad_interrupt(PIN_TOUCHPAD_INTERRUPT);
 mbed::InterruptIn main_button_interrupt(PIN_PUSH_BUTTON_OUT);
 
-// mbed::DigitalOut lcd_cs(SPI_CS_LCD);
 mbed::DigitalOut spi_flash_cs(SPI_CS_FLASH);
 
 mbed::I2C i2c(I2C_SDA, I2C_SCL);
@@ -85,7 +82,10 @@ int main()
 
     hrs.set_enable(HRS3300_HeartRateSensor::HRS_ENABLE,
                    HRS3300_HeartRateSensor::HRS_WAIT_TIME_400ms);
-    // BMA421_Accelerometer accel(&i2c);
+
+    struct bma4_dev bma;
+
+    ptime_accel_init(&bma, &i2c);
 
     tr_info("display init");
     display.init();
@@ -97,34 +97,48 @@ int main()
     display.setTextColor(0xFFFF, 0x0000);
     display.printf("SPIF Size: %lluB \r\n", bd->size());
 
-    event_queue.call_every(500, task_500ms);
-    event_queue_thread.start(callback(&event_queue, &events::EventQueue::dispatch_forever));
+    event_queue.call_every(500, task_500ms, &bma);
     touchpad_interrupt.fall(event_queue.event(&touch_pad, &CST0xx_TouchPad::handle_interrupt));
     main_button_interrupt.mode(PullNone);
     main_button_interrupt.rise(event_queue.event(main_button_on_rise));
     main_button_interrupt.fall(event_queue.event(main_button_on_fall));
+
+    event_queue.dispatch_forever();
 }
 
-void task_500ms()
+void task_500ms(struct bma4_dev *bma)
 {
     float battery_voltage_v = (battery_voltage.read() * 3.3) * 2;
     struct bma4_accel data;
-    // rslt = bma4_read_accel_xyz(&data, &bma);
-    // if (rslt)
-    // {
-    //     print_rslt(rslt);
-    // }
+    int16_t rslt = bma4_read_accel_xyz(&data, bma);
+    if (rslt)
+    {
+        ptime_accel_print_rslt(rslt);
+    }
 
     display.setTextSize(2);
     display.setCursor(0, 40);
     display.setTextColor(0xFFFF, 0x0000);
     display.printf("Batt: %f \r\n", battery_voltage_v);
 
+    if (charge_indication)
+    {
+        display.printf("Not Charging.\r\n");
+    }
+    else
+    {
+        display.printf("Charging.    \r\n");
+    }
+
     uint32_t hrs_val = hrs.read_heart_rate_sensor();
     uint32_t als_val = hrs.read_ambient_light_sensor();
 
     display.printf("HRS: %li \r\n", hrs_val);
     display.printf("ALS: %li \r\n", als_val);
+
+    display.printf("X: %i \r\n", data.x);
+    display.printf("Y: %i \r\n", data.y);
+    display.printf("Z: %i \r\n", data.z);
 
     tr_info("Batt Volt: %f. Accel Data: %i, %i, %i. HRS: %lu. ALS: %lu.", battery_voltage_v, data.x,
             data.y, data.z, hrs_val, als_val);
@@ -179,7 +193,7 @@ void on_touch_event(struct CST0xx_TouchPad::ts_event event)
         tr_info("SWIPE y+ X: %u Y: %u", event.x, event.y);
         break;
     case CST0xx_TouchPad::EVENT_TYPE_SWIPE_X_POSITIVE:
-        display.printf("SWIPE y+ X: %u Y: %u", event.x, event.y);
+        display.printf("SWIPE x+ X: %u Y: %u", event.x, event.y);
         tr_info("SWIPE x+ X: %u Y: %u", event.x, event.y);
         break;
     case CST0xx_TouchPad::EVENT_TYPE_SWIPE_Y_NEGATIVE:
