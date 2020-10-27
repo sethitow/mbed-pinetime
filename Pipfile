@@ -30,7 +30,7 @@ hidapi = {markers = "platform_system != 'Linux'",version = ">=0.7.99,<0.8.0"}
 cmsis-pack-manager = "<0.3.0,>=0.2.3"
 pywin32 = {markers = "platform_system == 'Windows'",version = "==224"}
 psutil = "==5.6.2"
-cryptography = "<2.5,>=2.4.x"
+cryptography = ">=2.4.x,<3.3"
 click = ">=7.0,<7.1"
 PrettyTable = "==0.7.2"
 PyYAML = "==4.2b1"
